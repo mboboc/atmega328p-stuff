@@ -1,0 +1,19 @@
+# Linux
+PORT ?= /dev/ttyUSB0
+# Windows
+# PORT ?= COM1
+ 
+all: blinky-led.hex
+ 
+blinky-led.hex: blinky-led.elf
+	avr-objcopy -j .text -j .data -O ihex blinky-led.elf blinky-led.hex
+	avr-size lab0.elf
+
+blinky-led.elf: blinky-led.c
+	#avr-gcc -Wall -mmcu=atmega328p -Os -DF_CPU=12000000 -o blinky-led.bin blinky-led.c
+	avr-gcc -Wall -mmcu=atmega328p -Os -o blinky-led.bin blinky-led.c
+
+upload: blinky-led.hex
+	avrdude -c arduino -p atmega328p -U flash:w:blinky-led.hex:i -P $(PORT)
+clean:
+	rm -rf lab0.elf lab0.hex
